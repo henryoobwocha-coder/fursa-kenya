@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fursa Kenya</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7f6;
+      color: #17201b;
+    }
+
+    header {
+      background: #087f5b;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 34px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      font-size: 17px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .search {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #087f5b;
+    }
+
+    .status {
+      color: #087f5b;
+      font-weight: bold;
+    }
+
+    .message {
+      text-align: center;
+      padding: 30px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Fursa Kenya</h1>
+  <p>Discover scholarships and opportunities for Kenyans</p>
+</header>
+
+<div class="container">
+
+  <input
+    id="search"
+    class="search"
+    type="text"
+    placeholder="Search scholarships and opportunities..."
+  >
+
+  <div id="opportunities">
+    <div class="message">Loading opportunities...</div>
+  </div>
+
+</div>
+
+<script>
+  // We will add your Supabase connection details here next.
+  const SUPABASE_URL = "YOUR_SUPABASE_URL";
+  const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+  let allOpportunities = [];
+
+  async function loadOpportunities() {
+    const { data, error } = await supabaseClient
+      .from("opportunities")
+      .select("*")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    const container = document.getElementById("opportunities");
+
+    if (error) {
+      container.innerHTML =
+        '<div class="message">Unable to load opportunities.</div>';
+      console.error(error);
+      return;
+    }
+
+    allOpportunities = data || [];
+    displayOpportunities(allOpportunities);
+  }
+
+  function displayOpportunities(opportunities) {
+    const container = document.getElementById("opportunities");
+
+    if (!opportunities.length) {
+      container.innerHTML =
+        '<div class="message">No opportunities found.</div>';
+      return;
+    }
+
+    container.innerHTML = opportunities.map(item => `
+      <div class="card">
+        <h2>${item.title || "Opportunity"}</h2>
+        <p class="status">Active opportunity</p>
+      </div>
+    `).join("");
+  }
+
+  document.getElementById("search").addEventListener("input", function () {
+    const searchText = this.value.toLowerCase();
+
+    const filtered = allOpportunities.filter(item =>
+      JSON.stringify(item).toLowerCase().includes(searchText)
+    );
+
+    displayOpportunities(filtered);
+  });
+
+  loadOpportunities();
+</script>
+
+</body>
+</html>
