@@ -139,42 +139,10 @@
   container.innerHTML = opportunities.map(item => `
     <div class="card">
       <h2>${item.title || "Opportunity"}</h2>
-
-      <p><strong>Organization:</strong> ${item.organization || "Not specified"}</p>
-
-      <p><strong>📅 Deadline:</strong> ${item.date || "Not specified"}</p>
-
-      <p><strong>💰 Funding:</strong> ${item.amount || "See official details"}</p>
-
-      <p><strong>👥 Eligibility:</strong> ${item.eligibility || "See official requirements"}</p>
-
-      <p>${item.description || ""}</p>
-
-      ${
-        item.application_url
-          ? `<p><a href="${item.application_url}" target="_blank" rel="noopener">
-              🔗 Apply / Official application
-            </a></p>`
-          : ""
-      }
+      <p class="status">Active opportunity</p>
     </div>
   `).join("");
 }
-    const container = document.getElementById("opportunities");
-
-    if (!opportunities.length) {
-      container.innerHTML =
-        '<div class="message">No opportunities found.</div>';
-      return;
-    }
-
-    container.innerHTML = opportunities.map(item => `
-      <div class="card">
-        <h2>${item.title || "Opportunity"}</h2>
-        <p class="status">Active opportunity</p>
-      </div>
-    `).join("");
-  }
 
   document.getElementById("search").addEventListener("input", function () {
     const searchText = this.value.toLowerCase();
