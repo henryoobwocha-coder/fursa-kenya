@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Fursa Kenya</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -50,8 +51,8 @@
 
     .card {
       background: white;
-      padding: 20px;
-      margin-bottom: 15px;
+      padding: 22px;
+      margin-bottom: 20px;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
@@ -61,9 +62,34 @@
       color: #087f5b;
     }
 
-    .status {
+    .card p {
+      line-height: 1.6;
+    }
+
+    .verified {
+      display: inline-block;
+      background: #e8f7f1;
       color: #087f5b;
+      padding: 6px 10px;
+      border-radius: 20px;
       font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .apply-button {
+      display: inline-block;
+      background: #087f5b;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 7px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .apply-button:hover {
+      opacity: 0.9;
     }
 
     .message {
@@ -96,8 +122,9 @@
 </div>
 
 <script>
-  // We will add your Supabase connection details here next.
+
   const SUPABASE_URL = "https://wqhbenevvvfpkvaesgga.supabase.co";
+
   const SUPABASE_ANON_KEY = "sb_publishable_SUy6r6GTnmptIaOlXZ_YWQ_juvQ7plf";
 
   const supabaseClient = supabase.createClient(
@@ -108,6 +135,7 @@
   let allOpportunities = [];
 
   async function loadOpportunities() {
+
     const { data, error } = await supabaseClient
       .from("opportunities")
       .select("*")
@@ -117,44 +145,115 @@
     const container = document.getElementById("opportunities");
 
     if (error) {
+      console.error(error);
+
       container.innerHTML =
         '<div class="message">Unable to load opportunities.</div>';
-      console.error(error);
+
       return;
     }
 
     allOpportunities = data || [];
+
     displayOpportunities(allOpportunities);
   }
 
-  function displayOpportunities(opportunities) {
-  const container = document.getElementById("opportunities");
 
-  if (!opportunities.length) {
-    container.innerHTML =
-      '<div class="message">No opportunities found.</div>';
-    return;
+  function displayOpportunities(opportunities) {
+
+    const container = document.getElementById("opportunities");
+
+    if (!opportunities.length) {
+
+      container.innerHTML =
+        '<div class="message">No opportunities found.</div>';
+
+      return;
+    }
+
+
+    container.innerHTML = opportunities.map(item => `
+
+      <div class="card">
+
+        ${
+          item.is_verified === true
+            ? '<div class="verified">✅ SOURCE VERIFIED</div>'
+            : ''
+        }
+
+        <h2>${item.title || "Opportunity"}</h2>
+
+        <p>
+          <strong>🏢 Organization:</strong>
+          ${item.organization || "Not specified"}
+        </p>
+
+        <p>
+          <strong>📅 Deadline:</strong>
+          ${item.date || "Not specified"}
+        </p>
+
+        <p>
+          <strong>💰 Funding:</strong>
+          ${item.amount || "See official details"}
+        </p>
+
+        <p>
+          <strong>👥 Eligibility:</strong>
+          ${item.eligibility || "See official requirements"}
+        </p>
+
+        <p>
+          <strong>🌍 Country:</strong>
+          ${item.country || "Not specified"}
+        </p>
+
+        <p>
+          <strong>📝 Description:</strong><br>
+          ${item.description || "No description available."}
+        </p>
+
+        ${
+          item.application_url
+            ? `
+              <a
+                class="apply-button"
+                href="${item.application_url}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                🔗 Apply Now
+              </a>
+            `
+            : ''
+        }
+
+      </div>
+
+    `).join("");
   }
 
-  container.innerHTML = opportunities.map(item => `
-    <div class="card">
-      <h2>${item.title || "Opportunity"}</h2>
-      <p class="status">Active opportunity</p>
-    </div>
-  `).join("");
-}
 
-  document.getElementById("search").addEventListener("input", function () {
-    const searchText = this.value.toLowerCase();
+  document
+    .getElementById("search")
+    .addEventListener("input", function () {
 
-    const filtered = allOpportunities.filter(item =>
-      JSON.stringify(item).toLowerCase().includes(searchText)
-    );
+      const searchText = this.value.toLowerCase();
 
-    displayOpportunities(filtered);
-  });
+      const filtered = allOpportunities.filter(item =>
+        JSON.stringify(item)
+          .toLowerCase()
+          .includes(searchText)
+      );
+
+      displayOpportunities(filtered);
+
+    });
+
 
   loadOpportunities();
+
 </script>
 
 </body>
