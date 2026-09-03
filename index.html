@@ -1,260 +1,51 @@
+  
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>FURSA OPPORTUNITIES FOUNDATION -KENYA</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7f6;
-      color: #17201b;
-    }
-
-    header {
-      background: #087f5b;
-      color: white;
-      padding: 30px 20px;
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 34px;
-    }
-
-    header p {
-      margin: 8px 0 0;
-      font-size: 17px;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    .search {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 16px;
-      margin-bottom: 25px;
-    }
-
-    .card {
-      background: white;
-      padding: 22px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    .card h2 {
-      margin-top: 0;
-      color: #087f5b;
-    }
-
-    .card p {
-      line-height: 1.6;
-    }
-
-    .verified {
-      display: inline-block;
-      background: #e8f7f1;
-      color: #087f5b;
-      padding: 6px 10px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 13px;
-      margin-bottom: 12px;
-    }
-
-    .apply-button {
-      display: inline-block;
-      background: #087f5b;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 7px;
-      text-decoration: none;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
-    .apply-button:hover {
-      opacity: 0.9;
-    }
-
-    .message {
-      text-align: center;
-      padding: 30px;
-    }
-  </style>
+<title>FURSA OPPORTUNITIES FOUNDATION - Kenya</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;margin:0;background:#f7f7f7}
+.header{background:#0a4d2a;color:white;padding:20px;text-align:center}
+.header h1{margin:0;font-size:28px}
+.tag{background:gold;color:black;padding:5px 15px;border-radius:20px;font-weight:bold;display:inline-block;margin-top:10px}
+.container{max-width:900px;margin:auto;padding:20px}
+.card{background:white;padding:20px;border-radius:10px;margin-bottom:15px;box-shadow:0 2px 5px #ccc}
+.sponsor{background:#e8f5e9;border:2px dashed #0a4d2a;padding:15px;text-align:center;border-radius:10px}
+.btn{background:#0a4d2a;color:white;padding:12px 25px;border:none;border-radius:5px;text-decoration:none;display:inline-block}
+</style>
 </head>
-
 <body>
-
-<header>
-  <h1>Fursa Kenya</h1>
-  <p>Discover scholarships and opportunities for Kenyans</p>
-</header>
-
-<div class="container">
-
-  <input
-    id="search"
-    class="search"
-    type="text"
-    placeholder="Search scholarships and opportunities..."
-  >
-
-  <div id="opportunities">
-    <div class="message">Loading opportunities...</div>
-  </div>
-
+<div class="header">
+<h1>FURSA OPPORTUNITIES FOUNDATION</h1>
+<p>Kenya's Scholarship Network | Inspired by SomaApp Tanzania</p>
+<span class="tag">Eldoret, Kenya | 100% Free For Students</span>
 </div>
 
-<script>
+<div class="container">
+<div class="card">
+<h2>🎓 Latest Scholarships & Opportunities</h2>
+<p>We verify and list: HELB Loans, Universities Fund, TVET Bursaries, Mastercard, DAAD, Commonwealth</p>
+<a class="btn" href="#opportunities">View Opportunities</a>
+</div>
 
-  const SUPABASE_URL = "https://wqhbenevvvfpkvaesgga.supabase.co";
+<div class="sponsor">
+<h3>🤝 Our Sponsors</h3>
+<p>Like SomaApp Tanzania, we are supported by partners who believe in education.</p>
+<p><b>Become our first sponsor - Logo here + mention to 1000+ students</b></p>
+<p>Contact: [Your WhatsApp Number]</p>
+</div>
 
-  const SUPABASE_ANON_KEY = "sb_publishable_SUy6r6GTnmptIaOlXZ_YWQ_juvQ7plf";
+<div class="card" id="opportunities">
+<h3>Current Opportunities (Connect Supabase here next)</h3>
+<p>Your Supabase data will appear here automatically after we connect it.</p>
+</div>
 
-  const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-
-  let allOpportunities = [];
-
-  async function loadOpportunities() {
-
-    const { data, error } = await supabaseClient
-      .from("opportunities")
-      .select("*")
-      .eq("is_active", true)
-      .order("created_at", { ascending: false });
-
-    const container = document.getElementById("opportunities");
-
-    if (error) {
-      console.error(error);
-
-      container.innerHTML =
-        '<div class="message">Unable to load opportunities.</div>';
-
-      return;
-    }
-
-    allOpportunities = data || [];
-
-    displayOpportunities(allOpportunities);
-  }
-
-
-  function displayOpportunities(opportunities) {
-
-    const container = document.getElementById("opportunities");
-
-    if (!opportunities.length) {
-
-      container.innerHTML =
-        '<div class="message">No opportunities found.</div>';
-
-      return;
-    }
-
-
-    container.innerHTML = opportunities.map(item => `
-
-      <div class="card">
-
-        ${
-          item.is_verified === true
-            ? '<div class="verified">✅ SOURCE VERIFIED</div>'
-            : ''
-        }
-
-        <h2>${item.title || "Opportunity"}</h2>
-
-        <p>
-          <strong>🏢 Organization:</strong>
-          ${item.organization || "Not specified"}
-        </p>
-
-        <p>
-          <strong>📅 Deadline:</strong>
-          ${item.date || "Not specified"}
-        </p>
-
-        <p>
-          <strong>💰 Funding:</strong>
-          ${item.amount || "See official details"}
-        </p>
-
-        <p>
-          <strong>👥 Eligibility:</strong>
-          ${item.eligibility || "See official requirements"}
-        </p>
-
-        <p>
-          <strong>🌍 Country:</strong>
-          ${item.country || "Not specified"}
-        </p>
-
-        <p>
-          <strong>📝 Description:</strong><br>
-          ${item.description || "No description available."}
-        </p>
-
-        ${
-          item.application_url
-            ? `
-              <a
-                class="apply-button"
-                href="${item.application_url}"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                🔗 Apply Now
-              </a>
-            `
-            : ''
-        }
-
-      </div>
-
-    `).join("");
-  }
-
-
-  document
-    .getElementById("search")
-    .addEventListener("input", function () {
-
-      const searchText = this.value.toLowerCase();
-
-      const filtered = allOpportunities.filter(item =>
-        JSON.stringify(item)
-          .toLowerCase()
-          .includes(searchText)
-      );
-
-      displayOpportunities(filtered);
-
-    });
-
-
-  loadOpportunities();
-
-</script>
-
+<div class="card">
+<h3>About Us - Our Foundation Model</h3>
+<p>Fursa Opportunities Foundation follows the same model as <b>SomaApp Foundation Tanzania</b> which partnered with TIA University and got funding from Social Capital Foundation.</p>
+<p>We partner with University of Eldoret & Moi University to ensure no student misses funding due to lack of information.</p>
+</div>
+</div>
 </body>
 </html>
