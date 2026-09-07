@@ -1,83 +1,46 @@
   <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FURSA FOUNDATION KENYA - Scholarships & Opportunities</title>
-<style>
-body{font-family:Arial,sans-serif;margin:0;background:#f4f7f6;color:#333}
-header{background:#0a7a42;color:white;padding:25px;text-align:center}
-header h1{margin:0;font-size:28px}
-header p{margin:5px 0 0 0}
-.container{max-width:900px;margin:20px auto;padding:0 15px}
-.card{background:white;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-.sponsor{border:2px dashed #0a7a42;background:#e8f5e9}
-.opportunity-item{border:1px solid #ddd;padding:15px;margin:15px 0;border-radius:10px;background:white}
-.btn{background:#0a7a42;color:white;padding:10px 20px;border-radius:5px;text-decoration:none;display:inline-block;font-weight:bold}
-h3{color:#0a7a42}
-</style>
-</head>
-<body>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Fursa Kenya</title>
+<style>body{font-family:Arial;margin:0;background:#f4f7f6}header{background:#0a7a42;color:white;padding:20px;text-align:center}.container{max-width:900px;margin:20px auto;padding:15px}.card{background:white;padding:20px;border-radius:10px;margin-bottom:15px;box-shadow:0 2px 5px #0001}.op{border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:8px}.btn{background:#0a7a42;color:white;padding:8px 15px;border-radius:5px;text-decoration:none;display:inline-block}</style>
+</head><body>
+<header><h1>Fursa Kenya</h1><p>Discover scholarships and opportunities</p></header>
+<div class="container"><div class="card"><div id="list">Loading opportunities...</div><div id="debug" style="color:red;margin-top:10px"></div></div></div>
 
-<header>
-<h1>FURSA OPPORTUNITIES FOUNDATION</h1>
-<p>Connecting 1000+ Kenyan Students to Scholarships, Internships & Jobs</p>
-</header>
-
-<div class="container">
-
-<div class="card sponsor">
-<h3>Our Sponsors</h3>
-<p>Like SomaApp Tanzania, we are supported by partners who believe in education.</p>
-<p><b>Become our first sponsor - Logo here + mention to 1000+ students</b></p>
-<p>Contact: [Your WhatsApp Number]</p>
-</div>
-
-<div class="card">
-<h3>Current Opportunities (Live from Supabase)</h3>
-<p>Below are real opportunities from our database. Updates automatically.</p>
-<div id="list">Loading scholarships...</div>
-</div>
-
-<div class="card">
-<h3>About Us - Our Foundation Model</h3>
-<p>Fursa Opportunities Foundation follows the same model as <b>SomaApp Tanzania</b>.</p>
-<p>We partner with University of Eldoret & Moi University to ensure no student misses an opportunity due to lack of information.</p>
-<p><b>Vision:</b> A Kenya where every student accesses opportunities.</p>
-</div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
 <script>
-const supabaseUrl = "https://wqhbenevvvfpkvaesgga.supabase.co"
-const supabaseKey = "sb_publishable_SUy6r6GTnmptIaOlXZ_YWQ_juvQ7plf"
-const client = supabase.createClient(supabaseUrl, supabaseKey)
+const url = "https://wqhbenevvvfpkvaesgga.supabase.co"
+const key = "sb_publishable_SUy6r6GTnmptIaOlXZ_YWQ_juvQ7plf"
+const client = supabase.createClient(url, key)
 
-async function load() {
-  const { data, error } = await client.from('opportunities').select('*').order('created_at', {ascending:false}).limit(30)
-  if(error){
-    document.getElementById('list').innerHTML = "Supabase Error: " + error.message + "<br>Go to Supabase > Table Editor > opportunities > Enable RLS Read Policy";
-    console.log(error)
-    return
+async function load(){
+  try{
+    document.getElementById('debug').innerText = "Connecting to Supabase... URL: "+url;
+    // Try both possible table names
+    let tablesToTry = ['opportunities','opportunities','scholarships'];
+    let data = null; let lastError = null;
+    for(let t of tablesToTry){
+      let res = await client.from(t).select('*').limit(20);
+      if(!res.error){ data = res.data; document.getElementById('debug').innerText = "Success! Table found: "+t+" with "+res.data.length+" rows"; break; }
+      else { lastError = res.error.message + " (table "+t+")"; }
+    }
+    if(!data){
+      document.getElementById('list').innerHTML = "Error loading";
+      document.getElementById('debug').innerText = "FAILED: "+lastError+" . Check Table Editor - what is your table name? Is it empty?";
+      return;
+    }
+    if(data.length===0){
+      document.getElementById('list').innerHTML = "Table is empty - Add rows in Supabase Table Editor";
+      return;
+    }
+    let html="";
+    data.forEach(o=>{
+      html+=`<div class="op"><h3>${o.title||'No Title'}</h3><p>${o.description||''}</p><small>Deadline: ${o.deadline||'Open'}</small><br><br><a href="${o.link||'#'}" target="_blank" class="btn">Apply Now</a></div>`
+    })
+    document.getElementById('list').innerHTML=html;
+  }catch(e){
+    document.getElementById('debug').innerText="JS Error: "+e.message
   }
-  if(!data || data.length===0){
-    document.getElementById('list').innerHTML = "No opportunities yet. Add data in Supabase.";
-    return
-  }
-  let html = ""
-  data.forEach(o=>{
-    html += `<div class="opportunity-item">
-      <h3 style="margin:0 0 5px 0">${o.title}</h3>
-      <p>${o.description||''}</p>
-      <small><b>Deadline:</b> ${o.deadline||'Open'} | <b>Type:</b> ${o.type||'Scholarship'}</small><br><br>
-      <a href="${o.link||'#'}" target="_blank" class="btn">Apply Now</a>
-    </div>`
-  })
-  document.getElementById('list').innerHTML = html
 }
 load()
 </script>
-
-</body>
-</html>
+</body></html>
