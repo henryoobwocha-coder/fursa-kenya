@@ -47,5 +47,34 @@ body{font-family:Arial;margin:0;background:#f7f7f7}
 <p>We partner with University of Eldoret & Moi University to ensure no student misses funding due to lack of information.</p>
 </div>
 </div>
+  <div id="list" style="padding:10px">Loading scholarships...</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseUrl = "https://wqhbenevvvfpkvaesgga.supabase.co"
+  const supabaseKey = "sb_publishable_SUy6r6GTnmptIaOlXZ_YWQ_juvQ7plf"
+  const client = supabase.createClient(supabaseUrl, supabaseKey)
+
+  async function load() {
+    const { data, error } = await client.from('opportunities').select('*').order('created_at', {ascending:false}).limit(20)
+    if(error){
+      document.getElementById('list').innerHTML = "Error: " + error.message + "<br>Did you enable RLS read policy?";
+      return
+    }
+    let html = ""
+    data.forEach(o=>{
+      html += `<div style="border:1px solid #ccc;padding:15px;margin:10px 0;border-radius:10px;background:white">
+        <h3 style="margin:0">${o.title}</h3>
+        <p>${o.description||''}</p>
+        <small>Deadline: ${o.deadline||'Open'} | Type: ${o.type||'Scholarship'}</small><br><br>
+        <a href="${o.link||'#'}" target="_blank" style="background:#0a7a42;color:white;padding:8px 15px;border-radius:5px;text-decoration:none">Apply Now</a>
+      </div>`
+    })
+    document.getElementById('list').innerHTML = html
+  }
+  load()
+</script>
+</body>
+</html>
 </body>
 </html>
