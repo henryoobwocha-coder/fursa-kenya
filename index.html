@@ -1,46 +1,40 @@
-  <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Fursa Kenya</title>
-<style>body{font-family:Arial;margin:0;background:#f4f7f6}header{background:#0a7a42;color:white;padding:20px;text-align:center}.container{max-width:900px;margin:20px auto;padding:15px}.card{background:white;padding:20px;border-radius:10px;margin-bottom:15px;box-shadow:0 2px 5px #0001}.op{border:1px solid #ddd;padding:15px;margin:10px 0;border-radius:8px}.btn{background:#0a7a42;color:white;padding:8px 15px;border-radius:5px;text-decoration:none;display:inline-block}</style>
+<style>body{font-family:Arial;margin:0;background:#f0f4f0}header{background:#0a7a42;color:white;padding:25px;text-align:center}.container{max-width:900px;margin:auto;padding:15px}.card{background:white;padding:20px;border-radius:10px;margin-bottom:15px;box-shadow:0 2px 8px #0002}.opp{border-left:5px solid #0a7a42;padding:15px;margin:12px 0;background:#fff;border-radius:8px}.btn{background:#0a7a42;color:white;padding:10px 18px;text-decoration:none;border-radius:6px;display:inline-block;font-weight:bold}</style>
 </head><body>
-<header><h1>Fursa Kenya</h1><p>Discover scholarships and opportunities</p></header>
-<div class="container"><div class="card"><div id="list">Loading opportunities...</div><div id="debug" style="color:red;margin-top:10px"></div></div></div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
+<header><h1>FURSA OPPORTUNITIES FOUNDATION</h1><p>Live Scholarships from Database</p></header>
+<div class="container">
+<div class="card"><h3>✅ Website is LIVE - Connected to Supabase</h3><p>Total Opportunities in DB: <span id="count">...</span></p></div>
+<div id="list">Loading via Direct API...</div>
+<div id="error" style="color:red;white-space:pre-wrap;margin-top:15px;background:#ffe6e6;padding:10px;border-radius:8px;display:none"></div>
+</div>
 <script>
-const url = "https://wqhbenevvvfpkvaesgga.supabase.co"
-const key = "sb_publishable_SUy6r6GTnmptIaOlXZ_YWQ_juvQ7plf"
-const client = supabase.createClient(url, key)
-
 async function load(){
+  const url = "https://wqhbenevvvfpkvaesgga.supabase.co/rest/v1/opportunities?select=*&order=created_at.desc&limit=20";
+  const key = "sb_publishable_SUy6r6GTnmptIaOlXZ_YWQ_juvQ7plf";
   try{
-    document.getElementById('debug').innerText = "Connecting to Supabase... URL: "+url;
-    // Try both possible table names
-    let tablesToTry = ['opportunities','opportunities','scholarships'];
-    let data = null; let lastError = null;
-    for(let t of tablesToTry){
-      let res = await client.from(t).select('*').limit(20);
-      if(!res.error){ data = res.data; document.getElementById('debug').innerText = "Success! Table found: "+t+" with "+res.data.length+" rows"; break; }
-      else { lastError = res.error.message + " (table "+t+")"; }
-    }
-    if(!data){
-      document.getElementById('list').innerHTML = "Error loading";
-      document.getElementById('debug').innerText = "FAILED: "+lastError+" . Check Table Editor - what is your table name? Is it empty?";
+    let res = await fetch(url, { headers: { "apikey": key, "Authorization": "Bearer "+key } });
+    let text = await res.text();
+    if(!res.ok){
+      document.getElementById('error').style.display='block';
+      document.getElementById('error').innerText = "API Error "+res.status+": "+text+"\n\nRun in Supabase SQL:\nALTER TABLE public.opportunities DISABLE ROW LEVEL SECURITY;";
+      document.getElementById('list').innerText="Failed - see red error below";
       return;
     }
-    if(data.length===0){
-      document.getElementById('list').innerHTML = "Table is empty - Add rows in Supabase Table Editor";
-      return;
-    }
+    let data = JSON.parse(text);
+    document.getElementById('count').innerText = data.length;
+    if(data.length==0){ document.getElementById('list').innerText="No data in table"; return; }
     let html="";
     data.forEach(o=>{
-      html+=`<div class="op"><h3>${o.title||'No Title'}</h3><p>${o.description||''}</p><small>Deadline: ${o.deadline||'Open'}</small><br><br><a href="${o.link||'#'}" target="_blank" class="btn">Apply Now</a></div>`
-    })
+      html+=`<div class="opp"><h3 style="margin:0 0 8px 0;color:#0a7a42">${o.title||'Untitled'}</h3><p>${(o.description||'').substring(0,200)}</p><p><small><b>Deadline:</b> ${o.deadline||'Open'} | <b>Type:</b> ${o.type||'Scholarship'}</small></p><a class="btn" href="${o.link||'#'}" target="_blank">Apply Now</a></div>`;
+    });
     document.getElementById('list').innerHTML=html;
   }catch(e){
-    document.getElementById('debug').innerText="JS Error: "+e.message
+    document.getElementById('error').style.display='block';
+    document.getElementById('error').innerText="Network Error: "+e.message;
   }
 }
-load()
+load();
 </script>
 </body></html>
