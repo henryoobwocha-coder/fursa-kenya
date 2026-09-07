@@ -1,80 +1,83 @@
-  
-<!DOCTYPE html>
-<html>
+  <!DOCTYPE html>
+<html lang="en">
 <head>
-<title>FURSA OPPORTUNITIES FOUNDATION - Kenya</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FURSA FOUNDATION KENYA - Scholarships & Opportunities</title>
 <style>
-body{font-family:Arial;margin:0;background:#f7f7f7}
-.header{background:#0a4d2a;color:white;padding:20px;text-align:center}
-.header h1{margin:0;font-size:28px}
-.tag{background:gold;color:black;padding:5px 15px;border-radius:20px;font-weight:bold;display:inline-block;margin-top:10px}
-.container{max-width:900px;margin:auto;padding:20px}
-.card{background:white;padding:20px;border-radius:10px;margin-bottom:15px;box-shadow:0 2px 5px #ccc}
-.sponsor{background:#e8f5e9;border:2px dashed #0a4d2a;padding:15px;text-align:center;border-radius:10px}
-.btn{background:#0a4d2a;color:white;padding:12px 25px;border:none;border-radius:5px;text-decoration:none;display:inline-block}
+body{font-family:Arial,sans-serif;margin:0;background:#f4f7f6;color:#333}
+header{background:#0a7a42;color:white;padding:25px;text-align:center}
+header h1{margin:0;font-size:28px}
+header p{margin:5px 0 0 0}
+.container{max-width:900px;margin:20px auto;padding:0 15px}
+.card{background:white;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.sponsor{border:2px dashed #0a7a42;background:#e8f5e9}
+.opportunity-item{border:1px solid #ddd;padding:15px;margin:15px 0;border-radius:10px;background:white}
+.btn{background:#0a7a42;color:white;padding:10px 20px;border-radius:5px;text-decoration:none;display:inline-block;font-weight:bold}
+h3{color:#0a7a42}
 </style>
 </head>
 <body>
-<div class="header">
+
+<header>
 <h1>FURSA OPPORTUNITIES FOUNDATION</h1>
-<p>Kenya's Scholarship Network | Inspired by SomaApp Tanzania</p>
-<span class="tag">Eldoret, Kenya | 100% Free For Students</span>
-</div>
+<p>Connecting 1000+ Kenyan Students to Scholarships, Internships & Jobs</p>
+</header>
 
 <div class="container">
-<div class="card">
-<h2>🎓 Latest Scholarships & Opportunities</h2>
-<p>We verify and list: HELB Loans, Universities Fund, TVET Bursaries, Mastercard, DAAD, Commonwealth</p>
-<a class="btn" href="#opportunities">View Opportunities</a>
-</div>
 
-<div class="sponsor">
-<h3>🤝 Our Sponsors</h3>
+<div class="card sponsor">
+<h3>Our Sponsors</h3>
 <p>Like SomaApp Tanzania, we are supported by partners who believe in education.</p>
 <p><b>Become our first sponsor - Logo here + mention to 1000+ students</b></p>
 <p>Contact: [Your WhatsApp Number]</p>
 </div>
 
-<div class="card" id="opportunities">
-<h3>Current Opportunities (Connect Supabase here next)</h3>
-<p>Your Supabase data will appear here automatically after we connect it.</p>
+<div class="card">
+<h3>Current Opportunities (Live from Supabase)</h3>
+<p>Below are real opportunities from our database. Updates automatically.</p>
+<div id="list">Loading scholarships...</div>
 </div>
 
 <div class="card">
 <h3>About Us - Our Foundation Model</h3>
-<p>Fursa Opportunities Foundation follows the same model as <b>SomaApp Foundation Tanzania</b> which partnered with TIA University and got funding from Social Capital Foundation.</p>
-<p>We partner with University of Eldoret & Moi University to ensure no student misses funding due to lack of information.</p>
+<p>Fursa Opportunities Foundation follows the same model as <b>SomaApp Tanzania</b>.</p>
+<p>We partner with University of Eldoret & Moi University to ensure no student misses an opportunity due to lack of information.</p>
+<p><b>Vision:</b> A Kenya where every student accesses opportunities.</p>
 </div>
+
 </div>
-  <div id="list" style="padding:10px">Loading scholarships...</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const supabaseUrl = "https://wqhbenevvvfpkvaesgga.supabase.co"
-  const supabaseKey = "sb_publishable_SUy6r6GTnmptIaOlXZ_YWQ_juvQ7plf"
-  const client = supabase.createClient(supabaseUrl, supabaseKey)
+const supabaseUrl = "https://wqhbenevvvfpkvaesgga.supabase.co"
+const supabaseKey = "sb_publishable_SUy6r6GTnmptIaOlXZ_YWQ_juvQ7plf"
+const client = supabase.createClient(supabaseUrl, supabaseKey)
 
-  async function load() {
-    const { data, error } = await client.from('opportunities').select('*').order('created_at', {ascending:false}).limit(20)
-    if(error){
-      document.getElementById('list').innerHTML = "Error: " + error.message + "<br>Did you enable RLS read policy?";
-      return
-    }
-    let html = ""
-    data.forEach(o=>{
-      html += `<div style="border:1px solid #ccc;padding:15px;margin:10px 0;border-radius:10px;background:white">
-        <h3 style="margin:0">${o.title}</h3>
-        <p>${o.description||''}</p>
-        <small>Deadline: ${o.deadline||'Open'} | Type: ${o.type||'Scholarship'}</small><br><br>
-        <a href="${o.link||'#'}" target="_blank" style="background:#0a7a42;color:white;padding:8px 15px;border-radius:5px;text-decoration:none">Apply Now</a>
-      </div>`
-    })
-    document.getElementById('list').innerHTML = html
+async function load() {
+  const { data, error } = await client.from('opportunities').select('*').order('created_at', {ascending:false}).limit(30)
+  if(error){
+    document.getElementById('list').innerHTML = "Supabase Error: " + error.message + "<br>Go to Supabase > Table Editor > opportunities > Enable RLS Read Policy";
+    console.log(error)
+    return
   }
-  load()
+  if(!data || data.length===0){
+    document.getElementById('list').innerHTML = "No opportunities yet. Add data in Supabase.";
+    return
+  }
+  let html = ""
+  data.forEach(o=>{
+    html += `<div class="opportunity-item">
+      <h3 style="margin:0 0 5px 0">${o.title}</h3>
+      <p>${o.description||''}</p>
+      <small><b>Deadline:</b> ${o.deadline||'Open'} | <b>Type:</b> ${o.type||'Scholarship'}</small><br><br>
+      <a href="${o.link||'#'}" target="_blank" class="btn">Apply Now</a>
+    </div>`
+  })
+  document.getElementById('list').innerHTML = html
+}
+load()
 </script>
-</body>
-</html>
+
 </body>
 </html>
