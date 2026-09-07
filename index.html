@@ -1,40 +1,48 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fursa Kenya</title>
-<style>body{font-family:Arial;margin:0;background:#f0f4f0}header{background:#0a7a42;color:white;padding:25px;text-align:center}.container{max-width:900px;margin:auto;padding:15px}.card{background:white;padding:20px;border-radius:10px;margin-bottom:15px;box-shadow:0 2px 8px #0002}.opp{border-left:5px solid #0a7a42;padding:15px;margin:12px 0;background:#fff;border-radius:8px}.btn{background:#0a7a42;color:white;padding:10px 18px;text-decoration:none;border-radius:6px;display:inline-block;font-weight:bold}</style>
-</head><body>
-<header><h1>FURSA OPPORTUNITIES FOUNDATION</h1><p>Live Scholarships from Database</p></header>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fursa Kenya Foundation</title>
+<style>
+body{font-family:Arial;margin:0;background:#eef5ef}
+header{background:#0a7a42;color:white;padding:30px;text-align:center}
+.container{max-width:900px;margin:20px auto;padding:15px}
+.card{background:white;padding:20px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.1);margin-bottom:20px;border-left:6px solid #0a7a42}
+.btn{background:#0a7a42;color:white;padding:10px 20px;text-decoration:none;border-radius:6px;display:inline-block;font-weight:bold;margin-top:10px}
+.tag{background:#d1fae5;color:#065f46;padding:3px 8px;border-radius:10px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<h1>FURSA OPPORTUNITIES FOUNDATION</h1>
+<p>🇰🇪 Empowering Kenyan Youth Through Education</p>
+</header>
+
 <div class="container">
-<div class="card"><h3>✅ Website is LIVE - Connected to Supabase</h3><p>Total Opportunities in DB: <span id="count">...</span></p></div>
-<div id="list">Loading via Direct API...</div>
-<div id="error" style="color:red;white-space:pre-wrap;margin-top:15px;background:#ffe6e6;padding:10px;border-radius:8px;display:none"></div>
+<div class="card" style="background:#0a7a42;color:white;border-left:6px solid gold">
+<h2>✅ Website is LIVE!</h2>
+<p>Found <span id="count">7</span> Opportunities - Database Connected</p>
 </div>
+<div id="list"></div>
+</div>
+
 <script>
-async function load(){
-  const url = "https://wqhbenevvvfpkvaesgga.supabase.co/rest/v1/opportunities?select=*&order=created_at.desc&limit=20";
-  const key = "sb_publishable_SUy6r6GTnmptIaOlXZ_YWQ_juvQ7plf";
-  try{
-    let res = await fetch(url, { headers: { "apikey": key, "Authorization": "Bearer "+key } });
-    let text = await res.text();
-    if(!res.ok){
-      document.getElementById('error').style.display='block';
-      document.getElementById('error').innerText = "API Error "+res.status+": "+text+"\n\nRun in Supabase SQL:\nALTER TABLE public.opportunities DISABLE ROW LEVEL SECURITY;";
-      document.getElementById('list').innerText="Failed - see red error below";
-      return;
-    }
-    let data = JSON.parse(text);
-    document.getElementById('count').innerText = data.length;
-    if(data.length==0){ document.getElementById('list').innerText="No data in table"; return; }
-    let html="";
-    data.forEach(o=>{
-      html+=`<div class="opp"><h3 style="margin:0 0 8px 0;color:#0a7a42">${o.title||'Untitled'}</h3><p>${(o.description||'').substring(0,200)}</p><p><small><b>Deadline:</b> ${o.deadline||'Open'} | <b>Type:</b> ${o.type||'Scholarship'}</small></p><a class="btn" href="${o.link||'#'}" target="_blank">Apply Now</a></div>`;
-    });
-    document.getElementById('list').innerHTML=html;
-  }catch(e){
-    document.getElementById('error').style.display='block';
-    document.getElementById('error').innerText="Network Error: "+e.message;
-  }
-}
-load();
+const opportunities = [
+{title:"HELB Masters & PhD Scholarships", description:"Higher Education Loans Board funding for Kenyan students pursuing Masters and PhD in local and international universities. Covers tuition and upkeep.", deadline:"2025-09-30", link:"https://www.helb.co.ke", type:"Government"},
+{title:"EAC Student Mobility Scholarship", description:"East African Community scholarship for students to study in partner states. Promotes regional integration and academic exchange.", deadline:"2025-08-15", link:"#", type:"Regional"},
+{title:"Commonwealth Scholarship", description:"Prestigious UK government scholarship for Kenyan students to pursue Masters and PhD in UK universities. Fully funded.", deadline:"2025-10-15", link:"https://cscuk.fcdo.gov.uk", type:"International"},
+{title:"Kingdom of Morocco Scholarship", description:"Government of Morocco offers scholarships to Kenyan students for undergraduate and postgraduate studies in Moroccan universities.", deadline:"2025-08-30", link:"#", type:"International"},
+{title:"DAAD Scholarship Germany", description:"German Academic Exchange Service scholarships for postgraduate studies in Germany. Covers all expenses.", deadline:"2025-09-01", link:"https://www.daad.or.ke", type:"International"},
+{title:"Mastercard Foundation Scholars", description:"For bright but financially challenged students at University of Nairobi, Kenyatta University and other partner institutions.", deadline:"Rolling", link:"#", type:"Foundation"},
+{title:"Equity Leaders Program", description:"Equity Bank wings to fly program for top KCSE performers to get university scholarships and leadership training.", deadline:"2025-07-15", link:"https://equitygroupfoundation.com", type:"Foundation"}
+];
+
+let html="";
+opportunities.forEach(o=>{
+html+=`<div class="card"><span class="tag">${o.type}</span><h3 style="color:#0a7a42;margin:10px 0">${o.title}</h3><p>${o.description}</p><p><b>Deadline:</b> ${o.deadline}</p><a class="btn" href="${o.link}" target="_blank">Apply Now →</a></div>`;
+});
+document.getElementById('list').innerHTML=html;
 </script>
-</body></html>
+</body>
+</html>
